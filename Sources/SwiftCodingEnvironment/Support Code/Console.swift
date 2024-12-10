@@ -63,7 +63,7 @@ enum RunState : Equatable {
 @MainActor
 protocol Console : ObservableObject {
     
-    init(colorScheme: ColorScheme)
+    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<Self>)
     
     func tick()
     
@@ -86,17 +86,21 @@ struct ConsoleError: Error {
     var message: String
 }
 
+typealias MainFunction<C: Console> = (_ console: C) async throws -> Void
+
 @MainActor
 class BaseConsole<C: Console> {
+    
+    
     @Published var state: RunState = .idle
     @Published var startTime : Date? = nil
     @Published var endTime : Date? = nil
     @Published var timeString = ""
     @Published var task: Task<Void, Never>? = nil
     
-    var mainFunction: (_ console: C) async throws -> Void
+    var mainFunction: MainFunction<C>
     
-    init(mainFunction: @escaping (_ console: C) async throws -> Void) {
+    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
         self.mainFunction = mainFunction
     }
     

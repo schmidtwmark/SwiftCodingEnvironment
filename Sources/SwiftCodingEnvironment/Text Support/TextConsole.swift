@@ -12,9 +12,9 @@ import DequeModule
 let MAX_LINES = 100
 
 @MainActor
-class TextConsole: BaseConsole<TextConsole>, Console {
-    required init(colorScheme: ColorScheme) {
-        super.init(mainFunction: main)
+final class TextConsole: BaseConsole<TextConsole>, Console {
+    required override init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TextConsole>) {
+        super.init(colorScheme: colorScheme, mainFunction: mainFunction)
     }
     
     struct Line : Identifiable {

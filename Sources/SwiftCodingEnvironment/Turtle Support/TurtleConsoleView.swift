@@ -110,5 +110,5 @@ struct TurtleConsoleView: ConsoleView {
 }
 
 #Preview {
-    CodeEnvironmentView<TurtleConsole, TurtleConsoleView>()
+    CodeEnvironmentView<TurtleConsole, TurtleConsoleView>(mainFunction: turtleMain)
 }

@@ -51,5 +51,5 @@ struct TextConsoleView: ConsoleView {
 }
 
 #Preview {
-    CodeEnvironmentView<TextConsole, TextConsoleView>()
+    CodeEnvironmentView<TextConsole, TextConsoleView>(mainFunction: main)
 }

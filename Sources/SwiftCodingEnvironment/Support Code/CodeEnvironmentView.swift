@@ -14,15 +14,16 @@ let CORNER_RADIUS = 8.0
 struct CodeEnvironmentView<C: Console, CV: ConsoleView>: View {
     
     @Environment(\.colorScheme) var colorScheme
+    var mainFunction: MainFunction<C>
     var body: some View {
-        InnerCodeEnvironmentView<C, CV>(colorScheme: colorScheme)
+        InnerCodeEnvironmentView<C, CV>(colorScheme: colorScheme, mainFunction: mainFunction)
     }
 }
 struct InnerCodeEnvironmentView<C: Console, CV: ConsoleView>: View {
     
     @StateObject var console: C
-    init(colorScheme: ColorScheme) {
-        let c = C(colorScheme: colorScheme)
+    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
+        let c = C(colorScheme: colorScheme, mainFunction: mainFunction)
         _console = StateObject(wrappedValue: c)
     }
     let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
