@@ -106,6 +106,21 @@ struct TurtleConsoleView: ConsoleView {
                     .animation(.easeInOut(duration: 0.5), value: console.scene.showCameraLock)
                     
             }
+            .onAppear() {
+                if let resourcePath = Bundle.main.resourcePath {
+                        let fileManager = FileManager.default
+                        do {
+                            let resources = try fileManager.contentsOfDirectory(atPath: resourcePath)
+                            for resource in resources {
+                                print(resource)
+                            }
+                        } catch {
+                            print("Error while listing resources: \(error)")
+                        }
+                    } else {
+                        print("Unable to find resource path.")
+                    }
+            }
     }
 }
 

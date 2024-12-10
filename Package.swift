@@ -24,7 +24,8 @@ let package = Package(
             name: "SwiftCodingEnvironment",
             dependencies: [
                 .product(name: "DequeModule", package: "swift-collections"),
-            ]
+            ],
+            resources: [.process("arrow.png")]
         )
     ]
 )
