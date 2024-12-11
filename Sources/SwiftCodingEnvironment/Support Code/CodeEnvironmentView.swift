@@ -12,6 +12,10 @@ import Combine
 let CORNER_RADIUS = 8.0
 
 public struct CodeEnvironmentView<C: Console, CV: ConsoleView>: View {
+    public init(mainFunction: @escaping MainFunction<C>) {
+        self.mainFunction = mainFunction
+    }
+    
     
     @Environment(\.colorScheme) var colorScheme
     var mainFunction: MainFunction<C>
