@@ -45,15 +45,15 @@ public final class TextConsole: BaseConsole<TextConsole>, Console {
         }
     }
 
-    func write(_ line: String) throws {
+    public func write(_ line: String) throws {
         try append(Line(content: .output(.init(stringLiteral: line))))
     }
     
-    func write(_ colored: ColoredString) throws {
+    public func write(_ colored: ColoredString) throws {
         try append(Line(content: .output(colored.attributedString)))
     }
     
-    func read(_ prompt: String) async throws -> String {
+    public func read(_ prompt: String) async throws -> String {
         try append(Line(content: .output(.init(stringLiteral: prompt))))
         try append(Line(content: .input))
         setFocus?(true)

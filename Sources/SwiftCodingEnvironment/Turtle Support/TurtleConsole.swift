@@ -14,7 +14,7 @@ extension CGFloat {
     }
 }
 
-class Turtle: SKSpriteNode {
+public class Turtle: SKSpriteNode {
     private var rotation: CGFloat = 0
 
     private enum PenState {
@@ -38,18 +38,18 @@ class Turtle: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func forward(_ distance: CGFloat) async throws {
+    public func forward(_ distance: CGFloat) async throws {
         let dx = distance * cos(rotation)
         let dy = distance * sin(rotation)
         let moveAction = SKAction.moveBy(x: dx, y: dy, duration: distance / MOVEMENT_SPEED_0)
         try await self.runAsync(moveAction)
     }
     
-    func backward(_ distance: CGFloat) async throws {
+    public func backward(_ distance: CGFloat) async throws {
         try await forward(-distance)
     }
     
-    func runAsync(_ action: SKAction) async throws {
+    private func runAsync(_ action: SKAction) async throws {
         guard console.state == .running else { throw CancellationError() }
         await withCheckedContinuation { continuation in
             self.run(action) {
@@ -62,7 +62,7 @@ class Turtle: SKSpriteNode {
     // Trace the path of an arc with a certain radius for @param angle degrees
     // This should both move and rotate the turtle so it is always facing tangent to the circle.
     // Positive angles go left, negative angles go right (from perspective of turtle)
-    func arc(radius: CGFloat, angle: CGFloat) async throws {
+    public func arc(radius: CGFloat, angle: CGFloat) async throws {
         if radius <= 0 {
             throw ConsoleError(message: "Invalid radius: \(radius)")
         }
@@ -85,13 +85,13 @@ class Turtle: SKSpriteNode {
         try await self.runAsync(group)
     }
 
-   func rotate(_ angle: CGFloat) async throws {
+   public func rotate(_ angle: CGFloat) async throws {
         rotation += angle.radians
         let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: abs(angle / ROTATION_SPEED_0))
         try await self.runAsync(rotateAction)
     }
     
-    func setColor(_ color: UIColor) throws {
+    public func setColor(_ color: UIColor) throws {
         self.color = color
         if case .down(_, _) = penState {
             // Call penDown again so the next section has the right color
@@ -99,7 +99,7 @@ class Turtle: SKSpriteNode {
         }
     }
     
-    func penDown() throws {
+    public func penDown() throws {
         let path = CGMutablePath()
         path.move(to: self.position)
         let pathNode = SKShapeNode()
@@ -116,11 +116,11 @@ class Turtle: SKSpriteNode {
         }
     }
     
-    func penUp() throws {
+    public func penUp() throws {
         penState = .up
     }
     
-    func lineWidth(_ width: CGFloat) throws {
+    public func lineWidth(_ width: CGFloat) throws {
         lineWidth = width
         if case .down(_, _) = penState {
             try penDown()
@@ -290,7 +290,7 @@ public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
         false
     }
     
-    func addTurtle() async throws -> Turtle {
+    public func addTurtle() async throws -> Turtle {
         let turtle = Turtle(console: self)
         scene.addChild(turtle)
         return turtle

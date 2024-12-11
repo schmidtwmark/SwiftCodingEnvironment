@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct ColoredString {
+public struct ColoredString {
     struct Substring {
         var string: String
         var color: Color
     }
     
-    init() {
+    public init() {
         substrings = []
     }
     
-    init(_ string: String, _ color: Color) {
+    public init(_ string: String, _ color: Color) {
         substrings = [.init(string: string, color: color)]
     }
     
@@ -36,15 +36,15 @@ struct ColoredString {
         
     }
     
-    var string: String {
+    public var string: String {
         return substrings.reduce("") { $0 + $1.string }
     }
     
-    static func += (lhs: inout ColoredString, rhs: ColoredString) {
+    public static func += (lhs: inout ColoredString, rhs: ColoredString) {
         lhs.substrings.append(contentsOf: rhs.substrings)
     }
     
-    static func += (lhs: inout ColoredString, rhs: String) {
+    public static func += (lhs: inout ColoredString, rhs: String) {
         if var last = lhs.substrings.last {
             last.string += rhs
         } else {
@@ -52,11 +52,11 @@ struct ColoredString {
         }
     }
     
-    static func + (lhs: ColoredString, rhs: ColoredString) -> ColoredString {
+    public static func + (lhs: ColoredString, rhs: ColoredString) -> ColoredString {
         return .init(lhs.substrings + rhs.substrings)
     }
     
-    static func + (lhs: ColoredString, rhs: String) -> ColoredString {
+    public static func + (lhs: ColoredString, rhs: String) -> ColoredString {
         if var last = lhs.substrings.last {
             last.string += rhs
             return lhs
@@ -68,17 +68,17 @@ struct ColoredString {
 }
 
 extension String {
-    func colored(_ color: Color) -> ColoredString {
+    public func colored(_ color: Color) -> ColoredString {
         return ColoredString(self, color)
     }
     
-    static func += (lhs: inout String, rhs: ColoredString) {
+    public static func += (lhs: inout String, rhs: ColoredString) {
         if lhs.isEmpty {
             lhs = rhs.string
         }
     }
     
-    static func + (lhs: String, rhs: ColoredString) -> ColoredString {
+    public static func + (lhs: String, rhs: ColoredString) -> ColoredString {
         if var first = rhs.substrings.first {
             first.string = lhs + first.string
             return rhs
