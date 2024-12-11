@@ -17,7 +17,7 @@ func timeDisplay(_ start: Date, _ end: Date) -> String{
     }
 }
 
-enum RunState : Equatable { 
+public enum RunState : Equatable {
     case idle
     case running
     case success
@@ -61,7 +61,7 @@ enum RunState : Equatable {
 }
 
 @MainActor
-protocol Console : ObservableObject {
+public protocol Console : ObservableObject {
     
     init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<Self>)
     
@@ -86,25 +86,25 @@ struct ConsoleError: Error {
     var message: String
 }
 
-typealias MainFunction<C: Console> = (_ console: C) async throws -> Void
+public typealias MainFunction<C: Console> = (_ console: C) async throws -> Void
 
 @MainActor
-class BaseConsole<C: Console> {
+public class BaseConsole<C: Console> {
     
     
-    @Published var state: RunState = .idle
+    @Published public var state: RunState = .idle
     @Published var startTime : Date? = nil
     @Published var endTime : Date? = nil
     @Published var timeString = ""
     @Published var task: Task<Void, Never>? = nil
     
-    var mainFunction: MainFunction<C>
+    public var mainFunction: MainFunction<C>
     
-    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
+    public init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
         self.mainFunction = mainFunction
     }
     
-    var durationString: String {
+    public var durationString: String {
         if let startTime = startTime,
            let endTime = endTime {
             return timeDisplay(startTime, endTime)
@@ -112,31 +112,31 @@ class BaseConsole<C: Console> {
         return timeString
     }
     
-    func tick() {
+    public func tick() {
         if let start = startTime {
             timeString = timeDisplay(start, Date())
         }
     }
     
-    func finish(_ newState: RunState) {
+    public func finish(_ newState: RunState) {
         state = newState
         task = nil
         endTime = Date()
 
     }
     
-    func stop() {
+    public func stop() {
         task?.cancel()
         finish(.cancel)
     }
     
-    func clear() {
+    public func clear() {
         startTime = nil
         endTime = nil
         state = .idle
     }
     
-    func start() {
+    public func start() {
         state = .running
         startTime = Date()
         self.task = Task {
@@ -159,6 +159,6 @@ class BaseConsole<C: Console> {
 
 }
 
-protocol ConsoleView: View {
+public protocol ConsoleView: View {
     init(console: any Console)
 }

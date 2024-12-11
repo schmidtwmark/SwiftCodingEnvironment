@@ -12,8 +12,8 @@ import DequeModule
 let MAX_LINES = 100
 
 @MainActor
-final class TextConsole: BaseConsole<TextConsole>, Console {
-    required override init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TextConsole>) {
+public final class TextConsole: BaseConsole<TextConsole>, Console {
+    public required override init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TextConsole>) {
         super.init(colorScheme: colorScheme, mainFunction: mainFunction)
     }
     
@@ -76,12 +76,12 @@ final class TextConsole: BaseConsole<TextConsole>, Console {
     }
     
     
-    override func stop() {
+    public override func stop() {
         super.stop()
         submitInput(false)
     }
     
-    override func clear() {
+    public override func clear() {
         super.clear()
         lines = []
         userInput = ""
@@ -89,8 +89,8 @@ final class TextConsole: BaseConsole<TextConsole>, Console {
     }
     
     
-    var disableClear: Bool {
+    public var disableClear: Bool {
         lines.isEmpty
     }
-    var title: String { "Console" }
+    public var title: String { "Console" }
 }

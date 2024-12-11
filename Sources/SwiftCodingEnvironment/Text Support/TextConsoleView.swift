@@ -8,8 +8,8 @@
 import SwiftUI
 import Combine
 
-struct TextConsoleView: ConsoleView {
-    init(console: any Console) {
+public struct TextConsoleView: ConsoleView {
+    public init(console: any Console) {
         self.console = console as! TextConsole
     }
     
@@ -17,7 +17,7 @@ struct TextConsoleView: ConsoleView {
     @ObservedObject var console: TextConsole
     @FocusState private var isTextFieldFocused: Bool
 
-    var body: some View {
+    public var body: some View {
         ScrollView {
             HStack {
                 LazyVStack (alignment: .leading) {

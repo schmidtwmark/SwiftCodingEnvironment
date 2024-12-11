@@ -268,14 +268,14 @@ extension CGSize {
 }
 
 @MainActor
-final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
+public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
     
     func updateBackground(_ colorScheme: ColorScheme) {
         scene.backgroundColor = colorScheme == .light ?
             .secondarySystemBackground : UIColor(_colorLiteralRed: 28/256, green: 28/256, blue: 30/256, alpha: 1)
     }
     
-    required override init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TurtleConsole>) {
+    required override public init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TurtleConsole>) {
         self.scene = TurtleScene()
         super.init(colorScheme: colorScheme, mainFunction: mainFunction)
         scene.size = CGSize(width: 5000, height: 5000)
@@ -286,7 +286,7 @@ final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
 
     var scene: TurtleScene
     
-    var disableClear: Bool {
+    public var disableClear: Bool {
         false
     }
     
@@ -296,16 +296,16 @@ final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
         return turtle
     }
     
-    var title: String { "Turtle" }
+    public var title: String { "Turtle" }
     
-    override func stop() {
+    override public func stop() {
         super.stop()
         for child in scene.children {
             child.removeAllActions()
         }
     }
     
-    override func clear() {
+    override public func clear() {
         super.clear()
         scene.removeAllChildren()
         scene.setupCamera()

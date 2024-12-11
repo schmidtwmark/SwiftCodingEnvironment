@@ -34,8 +34,8 @@ enum Speed : CGFloat, CaseIterable, Identifiable {
     }
 }
 
-struct TurtleConsoleView: ConsoleView {
-    init(console: any Console) {
+public struct TurtleConsoleView: ConsoleView {
+    public init(console: any Console) {
         self.console = console as! TurtleConsole
     }
     
@@ -45,7 +45,7 @@ struct TurtleConsoleView: ConsoleView {
     @ObservedObject var console: TurtleConsole
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
-    var body: some View{
+    public var body: some View{
         SpriteView(scene: console.scene)
             .onTapGesture {
                 withAnimation {

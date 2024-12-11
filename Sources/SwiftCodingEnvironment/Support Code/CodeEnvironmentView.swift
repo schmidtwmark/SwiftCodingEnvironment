@@ -11,11 +11,11 @@ import Combine
 
 let CORNER_RADIUS = 8.0
 
-struct CodeEnvironmentView<C: Console, CV: ConsoleView>: View {
+public struct CodeEnvironmentView<C: Console, CV: ConsoleView>: View {
     
     @Environment(\.colorScheme) var colorScheme
     var mainFunction: MainFunction<C>
-    var body: some View {
+    public var body: some View {
         InnerCodeEnvironmentView<C, CV>(colorScheme: colorScheme, mainFunction: mainFunction)
     }
 }
