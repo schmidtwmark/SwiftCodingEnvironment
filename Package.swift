@@ -12,7 +12,8 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "SwiftCodingEnvironment",
-            targets: ["SwiftCodingEnvironment"]),
+            targets: ["SwiftCodingEnvironment"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", "1.1.4"..<"2.0.0")

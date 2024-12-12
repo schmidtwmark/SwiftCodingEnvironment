@@ -26,9 +26,30 @@ public class Turtle: SKSpriteNode {
     private var penState: PenState = .up
     private var console: TurtleConsole
     
+    private static func texture() -> SKTexture {
+        let image = UIImage(resource: .init(name: "arrow", bundle: Bundle.module))
+        return SKTexture(image: image)
+//        guard let resourceUrl = Bundle.module.url(
+//          forResource: "arrow",
+//          withExtension: "png"
+//        ) else {
+//            print("Failed to get resource")
+//            return SKTexture()
+//        }
+//        do {
+//            let resourceData = try Data(contentsOf: resourceUrl)
+//            print("Loaded data!")
+//            return SKTexture(data: resourceData, size: CGSize(width: 32, height: 32))
+//
+//        } catch {
+//            print("Cannot load data from \(resourceUrl)")
+//            return SKTexture()
+//        }
+    }
+    
     init(console: TurtleConsole) {
         self.console = console
-        let texture = SKTexture(imageNamed: "Sources/SwiftCodingEnvironment/arrow")
+        let texture = Turtle.texture()
         super.init(texture: texture, color: .green, size: CGSize(width: 32.0, height: 32.0))
         self.colorBlendFactor = 1.0
         self.zPosition = 1
