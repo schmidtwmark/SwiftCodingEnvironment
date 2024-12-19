@@ -292,8 +292,7 @@ extension CGSize {
 public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
     
     func updateBackground(_ colorScheme: ColorScheme) {
-        scene.backgroundColor = colorScheme == .light ?
-            .secondarySystemBackground : UIColor(_colorLiteralRed: 28/256, green: 28/256, blue: 30/256, alpha: 1)
+        scene.backgroundColor = .secondarySystemBackground 
     }
     
     required override public init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<TurtleConsole>) {
@@ -302,7 +301,6 @@ public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
         scene.size = CGSize(width: 5000, height: 5000)
         scene.scaleMode = .resizeFill
         updateBackground(colorScheme)
-        
     }
 
     var scene: TurtleScene

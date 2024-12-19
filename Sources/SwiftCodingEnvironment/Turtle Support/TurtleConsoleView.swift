@@ -35,8 +35,9 @@ enum Speed : CGFloat, CaseIterable, Identifiable {
 }
 
 public struct TurtleConsoleView: ConsoleView {
-    public init(console: any Console) {
-        self.console = console as! TurtleConsole
+    
+    public init(console: TurtleConsole) {
+        self.console = console 
     }
     
     @State var speedButtonOpen: Bool = false
@@ -106,21 +107,6 @@ public struct TurtleConsoleView: ConsoleView {
                     .animation(.easeInOut(duration: 0.5), value: console.scene.showCameraLock)
                     
             }
-            .onAppear() {
-                if let resourcePath = Bundle.main.resourcePath {
-                        let fileManager = FileManager.default
-                        do {
-                            let resources = try fileManager.contentsOfDirectory(atPath: resourcePath)
-                            for resource in resources {
-                                print(resource)
-                            }
-                        } catch {
-                            print("Error while listing resources: \(error)")
-                        }
-                    } else {
-                        print("Unable to find resource path.")
-                    }
-            }
     }
 }
 
@@ -147,5 +133,5 @@ func turtleMain(console: TurtleConsole) async throws {
 
 
 #Preview {
-    CodeEnvironmentView<TurtleConsole, TurtleConsoleView>(mainFunction: turtleMain)
+    CodeEnvironmentView<TurtleConsoleView>(mainFunction: turtleMain)
 }

@@ -11,23 +11,23 @@ import Combine
 
 let CORNER_RADIUS = 8.0
 
-public struct CodeEnvironmentView<C: Console, CV: ConsoleView>: View {
-    public init(mainFunction: @escaping MainFunction<C>) {
+public struct CodeEnvironmentView<CV: ConsoleView>: View {
+    public init(mainFunction: @escaping MainFunction<CV.ConsoleType>) {
         self.mainFunction = mainFunction
     }
     
     
     @Environment(\.colorScheme) var colorScheme
-    var mainFunction: MainFunction<C>
+    var mainFunction: MainFunction<CV.ConsoleType>
     public var body: some View {
-        InnerCodeEnvironmentView<C, CV>(colorScheme: colorScheme, mainFunction: mainFunction)
+        InnerCodeEnvironmentView<CV>(colorScheme: colorScheme, mainFunction: mainFunction)
     }
 }
-struct InnerCodeEnvironmentView<C: Console, CV: ConsoleView>: View {
+struct InnerCodeEnvironmentView<CV: ConsoleView>: View {
     
-    @StateObject var console: C
-    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
-        let c = C(colorScheme: colorScheme, mainFunction: mainFunction)
+    @StateObject var console: CV.ConsoleType
+    init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<CV.ConsoleType>) {
+        let c = CV.ConsoleType(colorScheme: colorScheme, mainFunction: mainFunction)
         _console = StateObject(wrappedValue: c)
     }
     let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
@@ -37,9 +37,9 @@ struct InnerCodeEnvironmentView<C: Console, CV: ConsoleView>: View {
         VStack(spacing: 0) {
             HStack {
                 Text(console.title)
-                    .padding()
-                    .background(Color(uiColor: .secondarySystemBackground))
-                    .clipShape(.rect(topLeadingRadius: CORNER_RADIUS, topTrailingRadius: CORNER_RADIUS))
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemBackground))
+                        .clipShape(.rect(topLeadingRadius: CORNER_RADIUS, topTrailingRadius: CORNER_RADIUS))
                 Spacer()
                 if console.state != .idle {
                     HStack {
@@ -55,7 +55,6 @@ struct InnerCodeEnvironmentView<C: Console, CV: ConsoleView>: View {
                     .clipShape(.rect(cornerRadius: CORNER_RADIUS))
                 }
             }
-            Divider()
             CV(console: console)
                 .background(Color(uiColor: .secondarySystemBackground))
                 .clipShape(.rect(bottomLeadingRadius: CORNER_RADIUS, bottomTrailingRadius: CORNER_RADIUS, topTrailingRadius: CORNER_RADIUS))
@@ -78,7 +77,7 @@ struct InnerCodeEnvironmentView<C: Console, CV: ConsoleView>: View {
                         .frame(maxWidth: .infinity)
                         .fontWeight(.heavy)
                 }
-                .tint(console.state == .running ? .red : .accentColor)
+                .tint(console.state == .running ? .red : .blue)
                 .buttonStyle(.borderedProminent)
                 .frame(maxWidth: .infinity)
                 

@@ -160,5 +160,6 @@ public class BaseConsole<C: Console> {
 }
 
 public protocol ConsoleView: View {
-    init(console: any Console)
+    associatedtype ConsoleType : Console
+    init(console: ConsoleType)
 }

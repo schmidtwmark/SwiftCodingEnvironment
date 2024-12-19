@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 public struct TextConsoleView: ConsoleView {
-    public init(console: any Console) {
-        self.console = console as! TextConsole
+    public init(console: TextConsole) {
+        self.console = console
     }
     
     
@@ -22,17 +22,20 @@ public struct TextConsoleView: ConsoleView {
             HStack {
                 LazyVStack (alignment: .leading) {
                     ForEach(console.lines) { line in
-                        switch line.content {
-                        case .output(let text):
-                            Text(text)
-                                .frame(width: .infinity)
-                        case .input:
-                            TextField("", text: $console.userInput)
-                                .onSubmit {
-                                    console.submitInput(true)
-                                }
-                                .focused($isTextFieldFocused)
-                        }
+                        VStack {
+                            switch line.content {
+                            case .output(let text):
+                                Text(text)
+                                    .frame(width: .infinity, height: 30.0)
+                            case .input:
+                                TextField("", text: $console.userInput)
+                                    .onSubmit {
+                                        console.submitInput(true)
+                                    }
+                                    .frame(height: 30.0)
+                                    .focused($isTextFieldFocused)
+                            }
+                        }.border(.red)
                     }
                 }
                 Spacer()
@@ -50,17 +53,12 @@ public struct TextConsoleView: ConsoleView {
     
 }
 
-func main(console: TextConsole) async throws {
-    
-    let input = try await console.read("Enter a number")
-    let num = Int(input) ?? 0
-    for i in 0...num {
-        
-        try await console.write("\(i) iteration")
-    }
+func textMain(console: TextConsole) async throws {
+    let name = try await console.read("What is your name?")
+    try await console.write("Hello \(name)")
 }
 
 
 #Preview {
-    CodeEnvironmentView<TextConsole, TextConsoleView>(mainFunction: main)
+    CodeEnvironmentView<TextConsoleView>(mainFunction: textMain)
 }
