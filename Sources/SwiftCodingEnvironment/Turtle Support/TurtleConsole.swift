@@ -19,7 +19,7 @@ public class Turtle: SKSpriteNode {
 
     private enum PenState {
         case up
-        case down(CGMutablePath, SKShapeNode)
+        case down(CGMutablePath, SKShapeNode, /* fillColor */ UIColor)
     }
     
     private var lineWidth: CGFloat = 3.0
@@ -29,22 +29,6 @@ public class Turtle: SKSpriteNode {
     private static func texture() -> SKTexture {
         let image = UIImage(resource: .init(name: "arrow", bundle: Bundle.module))
         return SKTexture(image: image)
-//        guard let resourceUrl = Bundle.module.url(
-//          forResource: "arrow",
-//          withExtension: "png"
-//        ) else {
-//            print("Failed to get resource")
-//            return SKTexture()
-//        }
-//        do {
-//            let resourceData = try Data(contentsOf: resourceUrl)
-//            print("Loaded data!")
-//            return SKTexture(data: resourceData, size: CGSize(width: 32, height: 32))
-//
-//        } catch {
-//            print("Cannot load data from \(resourceUrl)")
-//            return SKTexture()
-//        }
     }
     
     init(console: TurtleConsole) {
@@ -114,24 +98,26 @@ public class Turtle: SKSpriteNode {
     
     public func setColor(_ color: UIColor) throws {
         self.color = color
-        if case .down(_, _) = penState {
+        if case .down(_, _, let fill) = penState {
             // Call penDown again so the next section has the right color
-            try penDown()
+            try penDown(fillColor: fill)
         }
     }
     
-    public func penDown() throws {
-        let path = CGMutablePath()
-        path.move(to: self.position)
-        let pathNode = SKShapeNode()
-        pathNode.strokeColor = self.color
-        pathNode.lineWidth = lineWidth
-        scene?.addChild(pathNode)
-        penState = .down(path, pathNode)
+    public func penDown(fillColor: UIColor = .clear) throws {
+            let path = CGMutablePath()
+            path.move(to: self.position)
+            let pathNode = SKShapeNode()
+            pathNode.strokeColor = self.color
+            pathNode.lineWidth = lineWidth
+            pathNode.fillColor = fillColor
+            scene?.addChild(pathNode)
+            penState = .down(path, pathNode, fillColor)
     }
     
+    
     func update() {
-        if case .down(let path, let pathNode) = penState {
+        if case .down(let path, let pathNode, _) = penState {
             path.addLine(to: self.position)
             pathNode.path = path
         }
@@ -143,8 +129,8 @@ public class Turtle: SKSpriteNode {
     
     public func lineWidth(_ width: CGFloat) throws {
         lineWidth = width
-        if case .down(_, _) = penState {
-            try penDown()
+        if case .down(_, _, let fill) = penState {
+            try penDown(fillColor: fill)
         }
     }
 }
