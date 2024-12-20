@@ -50,22 +50,19 @@ fi
 
 OUTPUT_DIR="$NAME.swiftpm"
 # Create the output directory
-mkdir -p "$OUTPUT_DIR/Support Code"
+mkdir -p "$OUTPUT_DIR"
 
 # Copy necessary files
-cp -r "Support Code/"* "$OUTPUT_DIR/Support Code/"
 sed "s/{{PACKAGE_NAME}}/$NAME/g" "Packaging/Package.txt" > "$OUTPUT_DIR/Package.swift"
 cp "Packaging/ResolvedPackage.txt" "$OUTPUT_DIR/Package.resolved"
 
 # Handle the type-specific files
 if [ "$TYPE" == "turtle" ]; then
   cp "Packaging/TurtleMain.txt" "$OUTPUT_DIR/Main.swift"
-  cp "Packaging/TurtleApp.txt" "$OUTPUT_DIR/Support Code/App.swift"
-  cp -r "Turtle Support/"* "$OUTPUT_DIR/Support Code/"
+  cp "Packaging/TurtleApp.txt" "$OUTPUT_DIR/App.swift"
 elif [ "$TYPE" == "text" ]; then
   cp "Packaging/TextMain.txt" "$OUTPUT_DIR/Main.swift"
-  cp "Packaging/TextApp.txt" "$OUTPUT_DIR/Support Code/App.swift"
-  cp -r "Text Support/"* "$OUTPUT_DIR/Support Code/"
+  cp "Packaging/TextApp.txt" "$OUTPUT_DIR/App.swift"
 
 fi
 
@@ -78,4 +75,7 @@ if [ -n "$MAIN" ]; then
   fi
 fi
 
-echo "Files successfully prepared in the '$OUTPUT_DIR' directory."
+# Zip up the file
+zip -r "$NAME.zip" "$OUTPUT_DIR" 
+
+echo "Files successfully prepared in the '$NAME.zip' zip file."
