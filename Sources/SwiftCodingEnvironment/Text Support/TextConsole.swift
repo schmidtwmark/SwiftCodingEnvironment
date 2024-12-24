@@ -44,16 +44,40 @@ public final class TextConsole: BaseConsole<TextConsole>, Console {
             throw CancellationError()
         }
     }
-
-    public func write(_ line: String) throws {
-        try append(Line(content: .output(.init(stringLiteral: line))))
+    
+    private nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async throws -> T) throws -> T {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: T? = nil
+        
+        
+        
+        DispatchQueue.main.async {
+            Task {
+                result = try await asyncCall()
+                semaphore.signal()
+            }
+        }
+        
+        semaphore.wait()
+        return result!
     }
     
-    public func write(_ colored: ColoredString) throws {
-        try append(Line(content: .output(colored.attributedString)))
+    public nonisolated func write(_ line: String) throws {
+        try sync({
+            try self.append(Line(content: .output(.init(stringLiteral: line))))
+        })
+    }
+    public nonisolated func write(_ colored: ColoredString) throws {
+        try sync({
+            try self.append(Line(content: .output(colored.attributedString)))
+        })
     }
     
-    public func read(_ prompt: String) async throws -> String {
+    public nonisolated func read(_ prompt: String) throws -> String {
+        return try sync({try await self.readAsync(prompt)})
+    }
+    
+    public func readAsync(_ prompt: String) async throws -> String {
         try append(Line(content: .output(.init(stringLiteral: prompt))))
         try append(Line(content: .input))
         setFocus?(true)
@@ -74,7 +98,6 @@ public final class TextConsole: BaseConsole<TextConsole>, Console {
         userInput = ""
         self.continuation = nil // Reset continuation
     }
-    
     
     public override func stop() {
         super.stop()

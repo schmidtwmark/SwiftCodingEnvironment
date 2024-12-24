@@ -52,8 +52,11 @@ public struct TextConsoleView: ConsoleView {
 }
 
 func textMain(console: TextConsole) async throws {
-    let name = try await console.read("What is your name?")
-    try await console.write("Hello \(name)")
+    let num = Int(try console.read("Enter a number?"))!
+    for i in 0...num {
+        try console.write("Num: \(i)")
+//        try await console.write("Num: \(i)")
+    }
 }
 
 

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct ColoredString {
+public struct ColoredString : Sendable {
     struct Substring {
         var string: String
         var color: Color
