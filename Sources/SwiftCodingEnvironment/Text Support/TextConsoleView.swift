@@ -26,16 +26,14 @@ public struct TextConsoleView: ConsoleView {
                             switch line.content {
                             case .output(let text):
                                 Text(text)
-                                    .frame(width: .infinity, height: 30.0)
                             case .input:
                                 TextField("", text: $console.userInput)
                                     .onSubmit {
                                         console.submitInput(true)
                                     }
-                                    .frame(height: 30.0)
                                     .focused($isTextFieldFocused)
                             }
-                        }.border(.red)
+                        }.frame(width: .infinity, height: 25.0)
                     }
                 }
                 Spacer()
