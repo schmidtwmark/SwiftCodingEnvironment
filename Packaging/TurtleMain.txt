@@ -1,3 +1,5 @@
-func main(console: TurtleConsole) async throws {
+import SwiftCodingEnvironment
+
+func start(console: TurtleConsole) async throws {
 
 }

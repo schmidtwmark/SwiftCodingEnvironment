@@ -1,10 +1,11 @@
 import SwiftUI
+import SwiftCodingEnvironment
 
 @main
 struct StudentCodeTemplateApp: App {
     var body: some Scene {
         WindowGroup {
-            CodeEnvironmentView<TextConsole, TextConsoleView>(mainFunction: main)
+            CodeEnvironmentView<TextConsoleView>(mainFunction: start)
         }
     }
 }

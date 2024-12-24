@@ -33,7 +33,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", "1.1.4"..<"2.0.0")
+        .package(url: "https://github.com/apple/swift-collections", "1.1.4"..<"2.0.0"),
+        .package(url: "https://github.com/schmidtwmark/SwiftCodingEnvironment.git", "0.2.0"..<"1.0.0")
     ],
     targets: [
         .executableTarget(
@@ -45,7 +46,8 @@ let package = Package(
                 .product(name: "HashTreeCollections", package: "swift-collections"),
                 .product(name: "HeapModule", package: "swift-collections"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
-                .product(name: "_RopeModule", package: "swift-collections")
+                .product(name: "_RopeModule", package: "swift-collections"),
+                .product(name: "SwiftCodingEnvironment", package: "SwiftCodingEnvironment")
             ],
             path: ".",
             swiftSettings: [
