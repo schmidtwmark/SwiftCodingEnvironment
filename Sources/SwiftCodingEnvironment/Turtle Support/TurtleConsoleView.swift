@@ -111,7 +111,7 @@ public struct TurtleConsoleView: ConsoleView {
 }
 
 
-func turtleMain(console: TurtleConsole) async {
+func turtleMain(console: TurtleConsole) {
     
     let turtle = console.addTurtle()
     turtle.penDown()

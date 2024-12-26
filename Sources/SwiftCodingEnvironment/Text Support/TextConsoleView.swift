@@ -51,7 +51,7 @@ public struct TextConsoleView: ConsoleView {
     
 }
 
-func textMain(console: TextConsole) async {
+func textMain(console: TextConsole) {
     let num = Int(console.read("Enter a number?"))!
     for i in 0...num {
         console.write("Num: \(i)")

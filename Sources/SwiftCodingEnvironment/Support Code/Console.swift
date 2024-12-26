@@ -86,7 +86,7 @@ struct ConsoleError: Error {
     var message: String
 }
 
-public typealias MainFunction<C: Console> = (_ console: C) async -> Void
+public typealias MainFunction<C: Console> = @Sendable (_ console: C) -> Void
 
 @MainActor
 public class BaseConsole<C: Console> {
@@ -140,11 +140,13 @@ public class BaseConsole<C: Console> {
     public func start() {
         state = .running
         startTime = Date()
-        self.task = Task {
-            await mainFunction(self as! C)
-            withAnimation {
-                finish(.success)
-            }
+        self.task = Task.detached {
+            await self.mainFunction(self as! C)
+            self.sync({
+                withAnimation {
+                    self.finish(.success)
+                }
+            })
         }
     }
     
