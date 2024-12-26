@@ -43,21 +43,22 @@ public class Turtle: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public nonisolated func forward(_ distance: CGFloat) throws {
-        try console.sync({
+    public nonisolated func forward(_ distance: CGFloat) {
+        console.sync({
             let dx = distance * cos(self.rotation)
             let dy = distance * sin(self.rotation)
             let moveAction = SKAction.moveBy(x: dx, y: dy, duration: distance / MOVEMENT_SPEED_0)
-            try await self.runAsync(moveAction)
+            await self.runAsync(moveAction)
         })
     }
     
-    public nonisolated func backward(_ distance: CGFloat) throws {
-        try forward(-distance)
+    public nonisolated func backward(_ distance: CGFloat) {
+        forward(-distance)
     }
     
-    private func runAsync(_ action: SKAction) async throws {
-        guard console.state == .running else { throw CancellationError() }
+    private func runAsync(_ action: SKAction) async {
+        guard console.state == .running else { return}
+        
         await withCheckedContinuation { continuation in
             self.run(action) {
                 continuation.resume()
@@ -69,10 +70,10 @@ public class Turtle: SKSpriteNode {
     // Trace the path of an arc with a certain radius for @param angle degrees
     // This should both move and rotate the turtle so it is always facing tangent to the circle.
     // Positive angles go left, negative angles go right (from perspective of turtle)
-    public nonisolated func arc(radius: CGFloat, angle: CGFloat) throws {
-        try console.sync({
-            if radius <= 0 {
-                throw ConsoleError(message: "Invalid radius: \(radius)")
+    public nonisolated func arc(radius: CGFloat, angle: CGFloat) {
+        console.sync({
+            guard radius >= 0 else {
+                return 
             }
             
             let counterclockwise = angle >= 0
@@ -93,30 +94,30 @@ public class Turtle: SKSpriteNode {
             let followAction = SKAction.follow(path, asOffset: true , orientToPath: false, duration: duration)
             let group = SKAction.group([rotateAction, followAction])
             
-            try await self.runAsync(group)
+            await self.runAsync(group)
             
         })
     }
 
-   public nonisolated func rotate(_ angle: CGFloat) throws {
-       try console.sync({
+   public nonisolated func rotate(_ angle: CGFloat) {
+       console.sync({
            self.rotation += angle.radians
            let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: abs(angle / ROTATION_SPEED_0))
-           try await self.runAsync(rotateAction)
+           await self.runAsync(rotateAction)
        })
     }
     
-    public nonisolated func setColor(_ color: UIColor) throws {
-        try console.sync({
+    public nonisolated func setColor(_ color: UIColor) {
+        console.sync({
             self.color = color
             if case .down(_, _, let fill) = self.penState {
                 // Call penDown again so the next section has the right color
-                try self.penDownAsync(fillColor: fill)
+                self.penDownAsync(fillColor: fill)
             }
         })
     }
     
-    private func penDownAsync(fillColor: UIColor = .clear) throws {
+    private func penDownAsync(fillColor: UIColor = .clear) {
         let path = CGMutablePath()
         path.move(to: self.position)
         let pathNode = SKShapeNode()
@@ -127,9 +128,9 @@ public class Turtle: SKSpriteNode {
         self.penState = .down(path, pathNode, fillColor)
     }
     
-    public nonisolated func penDown(fillColor: UIColor = .clear) throws {
-        try console.sync({
-            try self.penDownAsync()
+    public nonisolated func penDown(fillColor: UIColor = .clear) {
+        console.sync({
+            self.penDownAsync()
         })
     }
     
@@ -141,17 +142,17 @@ public class Turtle: SKSpriteNode {
         }
     }
     
-    public nonisolated func penUp() throws {
-        try console.sync({
+    public nonisolated func penUp() {
+        console.sync({
             self.penState = .up
         })
     }
     
-    public nonisolated func lineWidth(_ width: CGFloat) throws {
-        try console.sync({
+    public nonisolated func lineWidth(_ width: CGFloat) {
+        console.sync({
             self.lineWidth = width
             if case .down(_, _, let fill) = self.penState {
-                try self.penDownAsync(fillColor: fill)
+                self.penDownAsync(fillColor: fill)
             }
         })
     }
@@ -317,8 +318,8 @@ public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
         false
     }
     
-    public nonisolated func addTurtle() throws -> Turtle {
-        return try sync({
+    public nonisolated func addTurtle() -> Turtle {
+        return sync({
             let turtle = Turtle(console: self)
             self.scene.addChild(turtle)
             return turtle

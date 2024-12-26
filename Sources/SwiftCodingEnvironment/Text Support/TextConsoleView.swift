@@ -51,11 +51,10 @@ public struct TextConsoleView: ConsoleView {
     
 }
 
-func textMain(console: TextConsole) async throws {
-    let num = Int(try console.read("Enter a number?"))!
+func textMain(console: TextConsole) async {
+    let num = Int(console.read("Enter a number?"))!
     for i in 0...num {
-        try console.write("Num: \(i)")
-//        try await console.write("Num: \(i)")
+        console.write("Num: \(i)")
     }
 }
 

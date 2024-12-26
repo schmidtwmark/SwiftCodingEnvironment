@@ -111,26 +111,26 @@ public struct TurtleConsoleView: ConsoleView {
 }
 
 
-func turtleMain(console: TurtleConsole) async throws {
+func turtleMain(console: TurtleConsole) async {
     
-    let turtle = try console.addTurtle()
-    try turtle.penDown()
-    try turtle.rotate(30.0)
-    try turtle.forward(50)
-    try turtle.penDown(fillColor: .blue)
-    try turtle.arc(radius: 40.0, angle: 270.0)
-    try turtle.penDown()
-    try turtle.setColor(.red)
-    try turtle.lineWidth(5)
-    try turtle.forward(100)
-    try turtle.arc(radius: 40.0, angle: 270.0)
-    try turtle.forward(100)
-    try turtle.penDown(fillColor: .yellow)
-    try turtle.arc(radius: 40.0, angle: -270.0)
-    try turtle.forward(200)
-    try turtle.penUp()
-    try turtle.arc(radius: 40.0, angle: -30.0)
-    try turtle.forward(200)
+    let turtle = console.addTurtle()
+    turtle.penDown()
+    turtle.rotate(30.0)
+    turtle.forward(50)
+    turtle.penDown(fillColor: .blue)
+    turtle.arc(radius: 40.0, angle: 270.0)
+    turtle.penDown()
+    turtle.setColor(.red)
+    turtle.lineWidth(5)
+    turtle.forward(100)
+    turtle.arc(radius: 40.0, angle: 270.0)
+    turtle.forward(100)
+    turtle.penDown(fillColor: .yellow)
+    turtle.arc(radius: 40.0, angle: -270.0)
+    turtle.forward(200)
+    turtle.penUp()
+    turtle.arc(radius: 40.0, angle: -30.0)
+    turtle.forward(200)
 }
 
 

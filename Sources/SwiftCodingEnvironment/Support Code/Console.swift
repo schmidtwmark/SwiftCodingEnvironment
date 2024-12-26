@@ -86,7 +86,7 @@ struct ConsoleError: Error {
     var message: String
 }
 
-public typealias MainFunction<C: Console> = (_ console: C) async throws -> Void
+public typealias MainFunction<C: Console> = (_ console: C) async -> Void
 
 @MainActor
 public class BaseConsole<C: Console> {
@@ -103,6 +103,7 @@ public class BaseConsole<C: Console> {
     public init(colorScheme: ColorScheme, mainFunction: @escaping MainFunction<C>) {
         self.mainFunction = mainFunction
     }
+    
     
     public var durationString: String {
         if let startTime = startTime,
@@ -140,30 +141,20 @@ public class BaseConsole<C: Console> {
         state = .running
         startTime = Date()
         self.task = Task {
-            do {
-                try await mainFunction(self as! C)
-                withAnimation {
-                    finish(.success)
-                }
-            } catch is CancellationError {
-                // No need to do this here -- gets set on Stop
-            } catch let error as ConsoleError {
-                finish(.failed(error.message))
-            } catch {
-                withAnimation {
-                    finish(.failed("Unknown Error"))
-                }
+            await mainFunction(self as! C)
+            withAnimation {
+                finish(.success)
             }
         }
     }
     
-    package nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async throws -> T) throws -> T {
+    package nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async -> T) -> T {
         let semaphore = DispatchSemaphore(value: 0)
         var result: T? = nil
         
         DispatchQueue.main.async {
             Task {
-                result = try await asyncCall()
+                result = await asyncCall()
                 semaphore.signal()
             }
         }

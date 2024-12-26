@@ -34,32 +34,30 @@ public final class TextConsole: BaseConsole<TextConsole>, Console {
     
     private var continuation: CheckedContinuation<String?, Never>?
     
-    private func append(_ line: Line) throws {
+    private func append(_ line: Line) {
         if state == .running {
             if lines.count >= MAX_LINES {
                 lines.removeFirst()
             }
             lines.append(line)
-        } else {
-            throw CancellationError()
         }
     }
     
-    public nonisolated func write(_ line: String) throws {
-        try self.sync({
-            try self.append(Line(content: .output(.init(stringLiteral: line))))
+    public nonisolated func write(_ line: String) {
+        self.sync({
+           self.append(Line(content: .output(.init(stringLiteral: line))))
         })
     }
-    public nonisolated func write(_ colored: ColoredString) throws {
-        try self.sync({
-            try self.append(Line(content: .output(colored.attributedString)))
+    public nonisolated func write(_ colored: ColoredString) {
+        self.sync({
+            self.append(Line(content: .output(colored.attributedString)))
         })
     }
     
-    public nonisolated func read(_ prompt: String) throws -> String {
-        return try sync({
-            try self.append(Line(content: .output(.init(stringLiteral: prompt))))
-            try self.append(Line(content: .input))
+    public nonisolated func read(_ prompt: String) -> String {
+        return sync({
+            self.append(Line(content: .output(.init(stringLiteral: prompt))))
+            self.append(Line(content: .input))
             self.setFocus?(true)
             
             return await withCheckedContinuation { continuation in
