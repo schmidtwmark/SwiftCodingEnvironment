@@ -45,46 +45,28 @@ public final class TextConsole: BaseConsole<TextConsole>, Console {
         }
     }
     
-    private nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async throws -> T) throws -> T {
-        let semaphore = DispatchSemaphore(value: 0)
-        var result: T? = nil
-        
-        
-        
-        DispatchQueue.main.async {
-            Task {
-                result = try await asyncCall()
-                semaphore.signal()
-            }
-        }
-        
-        semaphore.wait()
-        return result!
-    }
-    
     public nonisolated func write(_ line: String) throws {
-        try sync({
+        try self.sync({
             try self.append(Line(content: .output(.init(stringLiteral: line))))
         })
     }
     public nonisolated func write(_ colored: ColoredString) throws {
-        try sync({
+        try self.sync({
             try self.append(Line(content: .output(colored.attributedString)))
         })
     }
     
     public nonisolated func read(_ prompt: String) throws -> String {
-        return try sync({try await self.readAsync(prompt)})
-    }
-    
-    public func readAsync(_ prompt: String) async throws -> String {
-        try append(Line(content: .output(.init(stringLiteral: prompt))))
-        try append(Line(content: .input))
-        setFocus?(true)
-        
-        return await withCheckedContinuation { continuation in
-            self.continuation = continuation
-        } ?? ""
+        return try sync({
+            try self.append(Line(content: .output(.init(stringLiteral: prompt))))
+            try self.append(Line(content: .input))
+            self.setFocus?(true)
+            
+            return await withCheckedContinuation { continuation in
+                self.continuation = continuation
+            } ?? ""
+
+        })
     }
                
     func submitInput(_ resume: Bool) {

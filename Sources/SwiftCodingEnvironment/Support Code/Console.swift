@@ -156,6 +156,21 @@ public class BaseConsole<C: Console> {
             }
         }
     }
+    
+    package nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async throws -> T) throws -> T {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: T? = nil
+        
+        DispatchQueue.main.async {
+            Task {
+                result = try await asyncCall()
+                semaphore.signal()
+            }
+        }
+        
+        semaphore.wait()
+        return result!
+    }
 
 }
 

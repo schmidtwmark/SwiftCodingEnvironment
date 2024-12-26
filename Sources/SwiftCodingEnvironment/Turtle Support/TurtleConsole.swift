@@ -24,7 +24,7 @@ public class Turtle: SKSpriteNode {
     
     private var lineWidth: CGFloat = 3.0
     private var penState: PenState = .up
-    private var console: TurtleConsole
+    private nonisolated let console: TurtleConsole
     
     private static func texture() -> SKTexture {
         let image = UIImage(resource: .init(name: "arrow", bundle: Bundle.module))
@@ -43,15 +43,17 @@ public class Turtle: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func forward(_ distance: CGFloat) async throws {
-        let dx = distance * cos(rotation)
-        let dy = distance * sin(rotation)
-        let moveAction = SKAction.moveBy(x: dx, y: dy, duration: distance / MOVEMENT_SPEED_0)
-        try await self.runAsync(moveAction)
+    public nonisolated func forward(_ distance: CGFloat) throws {
+        try console.sync({
+            let dx = distance * cos(self.rotation)
+            let dy = distance * sin(self.rotation)
+            let moveAction = SKAction.moveBy(x: dx, y: dy, duration: distance / MOVEMENT_SPEED_0)
+            try await self.runAsync(moveAction)
+        })
     }
     
-    public func backward(_ distance: CGFloat) async throws {
-        try await forward(-distance)
+    public nonisolated func backward(_ distance: CGFloat) throws {
+        try forward(-distance)
     }
     
     private func runAsync(_ action: SKAction) async throws {
@@ -62,57 +64,73 @@ public class Turtle: SKSpriteNode {
             }
         }
     }
-
+    
     
     // Trace the path of an arc with a certain radius for @param angle degrees
     // This should both move and rotate the turtle so it is always facing tangent to the circle.
     // Positive angles go left, negative angles go right (from perspective of turtle)
-    public func arc(radius: CGFloat, angle: CGFloat) async throws {
-        if radius <= 0 {
-            throw ConsoleError(message: "Invalid radius: \(radius)")
-        }
+    public nonisolated func arc(radius: CGFloat, angle: CGFloat) throws {
+        try console.sync({
+            if radius <= 0 {
+                throw ConsoleError(message: "Invalid radius: \(radius)")
+            }
+            
+            let counterclockwise = angle >= 0
+            let directionMultiplier : CGFloat = counterclockwise ? 1.0 : -1.0
+            let center = CGPoint(x: -directionMultiplier * sin(self.rotation) * radius, y: directionMultiplier * cos(self.rotation) * radius)
+            
+            let startOffset: CGFloat = counterclockwise ? 270.0 : 90.0
+            let path = CGMutablePath()
+            path.addRelativeArc(center: center, radius: radius, startAngle: startOffset.radians + self.rotation, delta: angle.radians)
+            
+            let circumference = abs(2 * .pi * radius * angle / 360)
+            let duration = circumference / MOVEMENT_SPEED_0
         
-        let counterclockwise = angle >= 0
-        let directionMultiplier : CGFloat = counterclockwise ? 1.0 : -1.0
-        let center = CGPoint(x: -directionMultiplier * sin(rotation) * radius, y: directionMultiplier * cos(rotation) * radius)
-        
-        let startOffset: CGFloat = counterclockwise ? 270.0 : 90.0
-        let path = CGMutablePath()
-        path.addRelativeArc(center: center, radius: radius, startAngle: startOffset.radians + rotation, delta: angle.radians)
-        
-        let circumference = abs(2 * .pi * radius * angle / 360)
-        let duration = circumference / MOVEMENT_SPEED_0
-        rotation += angle.radians
-        let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: duration)
-        let followAction = SKAction.follow(path, asOffset: true , orientToPath: false, duration: duration)
-        let group = SKAction.group([rotateAction, followAction])
-        
-        try await self.runAsync(group)
+            
+            
+            self.rotation += angle.radians
+            let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: duration)
+            let followAction = SKAction.follow(path, asOffset: true , orientToPath: false, duration: duration)
+            let group = SKAction.group([rotateAction, followAction])
+            
+            try await self.runAsync(group)
+            
+        })
     }
 
-   public func rotate(_ angle: CGFloat) async throws {
-        rotation += angle.radians
-        let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: abs(angle / ROTATION_SPEED_0))
-        try await self.runAsync(rotateAction)
+   public nonisolated func rotate(_ angle: CGFloat) throws {
+       try console.sync({
+           self.rotation += angle.radians
+           let rotateAction = SKAction.rotate(byAngle: angle.radians, duration: abs(angle / ROTATION_SPEED_0))
+           try await self.runAsync(rotateAction)
+       })
     }
     
-    public func setColor(_ color: UIColor) throws {
-        self.color = color
-        if case .down(_, _, let fill) = penState {
-            // Call penDown again so the next section has the right color
-            try penDown(fillColor: fill)
-        }
+    public nonisolated func setColor(_ color: UIColor) throws {
+        try console.sync({
+            self.color = color
+            if case .down(_, _, let fill) = self.penState {
+                // Call penDown again so the next section has the right color
+                try self.penDownAsync(fillColor: fill)
+            }
+        })
     }
     
-    public func penDown(fillColor: UIColor = .clear) throws {
-            let path = CGMutablePath()
-            path.move(to: self.position)
-            let pathNode = SKShapeNode()
-            pathNode.strokeColor = self.color
-            pathNode.lineWidth = lineWidth
-            pathNode.fillColor = fillColor
-            scene?.addChild(pathNode)
-            penState = .down(path, pathNode, fillColor)
+    private func penDownAsync(fillColor: UIColor = .clear) throws {
+        let path = CGMutablePath()
+        path.move(to: self.position)
+        let pathNode = SKShapeNode()
+        pathNode.strokeColor = self.color
+        pathNode.lineWidth = self.lineWidth
+        pathNode.fillColor = fillColor
+        self.scene?.addChild(pathNode)
+        self.penState = .down(path, pathNode, fillColor)
+    }
+    
+    public nonisolated func penDown(fillColor: UIColor = .clear) throws {
+        try console.sync({
+            try self.penDownAsync()
+        })
     }
     
     
@@ -123,15 +141,19 @@ public class Turtle: SKSpriteNode {
         }
     }
     
-    public func penUp() throws {
-        penState = .up
+    public nonisolated func penUp() throws {
+        try console.sync({
+            self.penState = .up
+        })
     }
     
-    public func lineWidth(_ width: CGFloat) throws {
-        lineWidth = width
-        if case .down(_, _, let fill) = penState {
-            try penDown(fillColor: fill)
-        }
+    public nonisolated func lineWidth(_ width: CGFloat) throws {
+        try console.sync({
+            self.lineWidth = width
+            if case .down(_, _, let fill) = self.penState {
+                try self.penDownAsync(fillColor: fill)
+            }
+        })
     }
 }
 
@@ -295,10 +317,12 @@ public final class TurtleConsole: BaseConsole<TurtleConsole>, Console {
         false
     }
     
-    public func addTurtle() async throws -> Turtle {
-        let turtle = Turtle(console: self)
-        scene.addChild(turtle)
-        return turtle
+    public nonisolated func addTurtle() throws -> Turtle {
+        return try sync({
+            let turtle = Turtle(console: self)
+            self.scene.addChild(turtle)
+            return turtle
+        })
     }
     
     public var title: String { "Turtle" }
