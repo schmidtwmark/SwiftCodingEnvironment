@@ -47,7 +47,10 @@ public class Turtle: SKSpriteNode {
         console.sync({
             let dx = distance * cos(self.rotation)
             let dy = distance * sin(self.rotation)
-            let moveAction = SKAction.moveBy(x: dx, y: dy, duration: distance / MOVEMENT_SPEED_0)
+            let start = self.position
+            let end = CGPointMake(start.x + dx, start.y + dy)
+            print("Forward \(start) -> \(end)")
+            let moveAction = SKAction.move(to: end, duration: distance / MOVEMENT_SPEED_0)
             await self.runAsync(moveAction)
         })
     }
@@ -124,13 +127,14 @@ public class Turtle: SKSpriteNode {
         pathNode.strokeColor = self.color
         pathNode.lineWidth = self.lineWidth
         pathNode.fillColor = fillColor
+        pathNode.lineCap = .square
         self.scene?.addChild(pathNode)
         self.penState = .down(path, pathNode, fillColor)
     }
     
     public nonisolated func penDown(fillColor: UIColor = .clear) {
         console.sync({
-            self.penDownAsync()
+            self.penDownAsync(fillColor: fillColor)
         })
     }
     

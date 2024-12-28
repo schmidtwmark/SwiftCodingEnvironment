@@ -1,5 +1,5 @@
 import SwiftCodingEnvironment
 
-func start(console: TextConsole) async throws {
+func start(console: TextConsole) {
 
 }
