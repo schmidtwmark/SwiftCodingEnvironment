@@ -150,21 +150,33 @@ public class BaseConsole<C: Console> {
         }
     }
     
+    final class UnsafeStorage<T>: @unchecked Sendable {
+        private var value: T?
+        
+        func set(_ newValue: T) {
+            value = newValue
+        }
+        
+        func get() -> T? {
+            value
+        }
+    }
+
     package nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async -> T) -> T {
         let semaphore = DispatchSemaphore(value: 0)
-        var result: T? = nil
+        let storage = UnsafeStorage<T>()
         
         DispatchQueue.main.async {
             Task {
-                result = await asyncCall()
+                let value = await asyncCall()
+                storage.set(value)
                 semaphore.signal()
             }
         }
         
         semaphore.wait()
-        return result!
+        return storage.get()!
     }
-
 }
 
 public protocol ConsoleView: View {

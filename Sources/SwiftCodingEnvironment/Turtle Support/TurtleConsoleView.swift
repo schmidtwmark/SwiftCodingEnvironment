@@ -63,7 +63,6 @@ public struct TurtleConsoleView: ConsoleView {
                                 withAnimation {
                                     console.scene.speed = speed.rawValue
                                     sceneSpeed = speed
-                                    print(console.scene.speed)
                                 }
                             }) {
                                 Image(systemName: speed.systemImage)

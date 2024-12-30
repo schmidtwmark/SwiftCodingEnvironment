@@ -49,7 +49,6 @@ public class Turtle: SKSpriteNode {
             let dy = distance * sin(self.rotation)
             let start = self.position
             let end = CGPointMake(start.x + dx, start.y + dy)
-            print("Forward \(start) -> \(end)")
             let moveAction = SKAction.move(to: end, duration: distance / MOVEMENT_SPEED_0)
             await self.runAsync(moveAction)
         })
@@ -257,7 +256,6 @@ class TurtleScene: SKScene {
         camera.removeAllActions()
         
         // Create a new action to move toward the target's position
-        print("Animating to \(target.position)")
         let moveAction = SKAction.move(to: target.position, duration: duration)
         moveAction.timingMode = .easeInEaseOut
         
