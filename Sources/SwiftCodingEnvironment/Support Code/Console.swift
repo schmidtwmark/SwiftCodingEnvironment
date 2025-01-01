@@ -86,7 +86,7 @@ struct ConsoleError: Error {
     var message: String
 }
 
-public typealias MainFunction<C: Console> = @Sendable (_ console: C) -> Void
+public typealias MainFunction<C: Console> = (_ console: C) -> Void
 
 @MainActor
 public class BaseConsole<C: Console> {
