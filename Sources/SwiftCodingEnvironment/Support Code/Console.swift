@@ -162,7 +162,7 @@ public class BaseConsole<C: Console> {
         }
     }
 
-    package nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async -> T) -> T {
+    internal nonisolated func sync<T: Sendable>(_ asyncCall: @MainActor @escaping () async -> T) -> T {
         let semaphore = DispatchSemaphore(value: 0)
         let storage = UnsafeStorage<T>()
         
